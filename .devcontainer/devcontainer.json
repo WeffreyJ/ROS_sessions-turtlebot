@@ -1,0 +1,42 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"dockerFile": "Dockerfile",
+	"name": "Drexel Labs",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"njpwerner.autodocstring",
+				"ms-vscode.cpptools",
+				"twxs.cmake",
+				"ms-azuretools.vscode-docker",
+				"ms-iot.vscode-ros",
+				"ms-vscode.cpptools-themes",
+				"ms-vscode-remote.remote-wsl"
+				
+			]
+		}
+	},
+
+    "runArgs": [
+		 "--privileged",
+        // // "-e", "DISPLAY=${env:DISPLAY}",
+		// // "-e", "QT_X11_NO_MITSHM=1",
+		// "-e", "DISPLAY",
+		"-v", "/tmp/.X11-unix/:/tmp/.X11-unix/",
+		"--net=host",
+        "-e", "DISPLAY"
+		
+    ],
+	
+	"containerEnv": {
+        // "DISPLAY": "unix:0",
+        // "ROS_LOCALHOST_ONLY": "1",
+        // "ROS_DOMAIN_ID": "42"
+    },
+
+	// "mounts": [
+	// 	"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+	
+	//  ],
+}
