@@ -32,8 +32,12 @@ RUN source /opt/ros/noetic/setup.bash \
  && source /turtlebot3_ws/devel/setup.bash
 RUN echo "source /turtlebot3_ws/devel/setup.bash" >> ~/.bashrc
 
-RUN echo "export ROS_HOSTNAME=10.0.0.184" >> ~/.bashrc
-RUN echo "export ROS_MASTER_URI=http://10.0.0.184:11311" >> ~/.bashrc
+# RUN echo "export ROS_HOSTNAME=10.0.0.184" >> ~/.bashrc
+# RUN echo "export ROS_MASTER_URI=http://10.0.0.184:11311" >> ~/.bashrc
+
+
+RUN echo "export ROS_HOSTNAME=localhost" >> ~/.bashrc
+RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> ~/.bashrc
 
 RUN echo "export OPENCR_PORT=/dev/ttyACM0" >> ~/.bashrc
 RUN echo "export OPENCR_MODEL=om_with_tb3_noetic" >> ~/.bashrc
