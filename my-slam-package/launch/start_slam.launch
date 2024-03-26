@@ -1,0 +1,10 @@
+<launch>
+    <!-- Launch your Turtlebot simulation (if using Gazebo) -->
+    <!-- Include your Turtlebot simulation launch file here -->
+
+    <!-- Launch your robot model -->
+    <!-- Include your URDF model launch file here -->
+
+    <!-- Launch your SLAM node -->
+    <node name="slam_node" pkg="my_slam" type="slam_node.py" output="screen"/>
+</launch>

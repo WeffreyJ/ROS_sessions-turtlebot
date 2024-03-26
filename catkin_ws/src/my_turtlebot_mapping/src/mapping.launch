@@ -1,0 +1,16 @@
+<!-- mapping.launch -->
+<launch>
+  <!-- Launch Gazebo simulation -->
+  <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+
+  <!-- Embed the URDF content here -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro'" />
+
+  <!-- Launch GMapping -->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="base_frame" value="base_footprint"/>
+    <param name="odom_frame" value="odom"/>
+    <param name="map_frame" value="map"/>
+    <param name="map_update_interval" value="1.0"/> <!-- Adjust as needed -->
+  </node>
+</launch>

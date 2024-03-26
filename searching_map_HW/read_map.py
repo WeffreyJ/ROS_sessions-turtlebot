@@ -1,53 +1,83 @@
 import sys
 from PIL import Image
 import copy
-import Queue
+import queue
 import math
 import matplotlib.pyplot as plt
 
-'''
-These variables are determined at runtime and should not be changed or mutated by you
-'''
-start = (0, 0)  # a single (x,y) tuple, representing the start position of the search algorithm
-end = (0, 0)  # a single (x,y) tuple, representing the end position of the search algorithm
-difficulty = ""  # a string reference to the original import file
+start = (0, 0)
+end = (0, 0)
+difficulty = ""
 G = 0
 E = 0
 e_list = []
-'''
-These variables determine display coler, and can be changed by you, I guess
-'''
+
 NEON_GREEN = (0, 255, 0)
 PURPLE = (85, 26, 139)
 LIGHT_GRAY = (50, 50, 50)
 DARK_GRAY = (100, 100, 100)
 
-'''
-These variables are determined and filled algorithmically, and are expected (and required) be mutated by you
-'''
-path = []  # an ordered list of (x,y) tuples, representing the path to traverse from start-->goal
-expanded = {}  # a dictionary of (x,y) tuples, representing nodes that have been expanded
-frontier = {}  # a dictionary of (x,y) tuples, representing nodes to expand to in the future
+path = []
+expanded = {}
+frontier = {}
 
-open = Queue.PriorityQueue()
+open = queue.PriorityQueue()
 came_from = {}
 cost_so_far = {}
 
+
 def search(map):
-    """
-    This function is meant to use the global variables [start, end, path, expanded, frontier] to search through the
-    provided map.
-    :param map: A '1-concept' PIL PixelAccess object to be searched. (basically a 2d boolean array)
-    """
-    pass
-   
+    def reconstruct_path(came_from, start, end):
+        current = end
+        path = [current]
+        while current != start:
+            current = came_from[current]
+            path.append(current)
+        path.reverse()
+        return path
+
+    def dijkstra(map, heuristic=None):
+        global path, expanded, frontier, came_from, cost_so_far
+
+        while not open.empty():
+            current, _ = open.get()
+
+            if current == end:
+                path = reconstruct_path(came_from, start, end)
+                break
+
+            for next in neighbors(current, map):
+                new_cost = cost_so_far[current] + 1
+
+                # Add heuristic values if provided
+                if heuristic:
+                    heuristic_value = heuristic(next, end)
+                    new_cost += heuristic_value
+
+                if next not in cost_so_far or new_cost < cost_so_far[next]:
+                    cost_so_far[next] = new_cost
+                    priority = new_cost
+                    open.put((next, priority))
+                    came_from[next] = current
+
+                expanded[current] = True
+
+    def neighbors(pos, map):
+        x, y = pos
+        possible_moves = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
+        valid_moves = [move for move in possible_moves if is_valid(move, map)]
+        return valid_moves
+
+    def is_valid(pos, map):
+        x, y = pos
+        return 0 <= x < len(map) and 0 <= y < len(map[0]) and map[x][y] == 1
+
+    # Call the dijkstra function here
+    dijkstra(map, heuristic=euclidean_distance)
+    # Add any additional processing or modifications you need for the results
 
 
-
-def visualize_search(save_file="do_not_save.png"):
-    """
-    :param save_file: (optional) filename to save image to (no filename given means no save file)
-    """
+def visualize_search(save_file="searching_map.png"):
     im = Image.open(difficulty).convert("RGB")
     pixel_access = im.load()
 
@@ -69,23 +99,25 @@ def visualize_search(save_file="do_not_save.png"):
 
     # display and (maybe) save results
     im.show()
-    if (save_file != "do_not_save.png"):
+    if (save_file != "searching_map.png"):
         im.save(save_file)
 
     im.close()
 
-if __name__ == "__main__":
-    # Throw Errors && Such
-    # global difficulty, start, end
-    # assert sys.version_info[0] == 2  # require python 2 (instead of python 3)
-    # assert len(sys.argv) == 2, "Incorrect Number of arguments"  # require difficulty input
 
-    # Parse input arguments
+def manhattan_distance(pos1, pos2):
+    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+
+def euclidean_distance(pos1, pos2):
+    return math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
+
+
+if __name__ == "__main__":
     function_name = str(sys.argv[0])
     difficulty = str(sys.argv[1])
     print("running " + function_name + " with " + difficulty + " difficulty.")
 
-    # Hard code start and end positions of search for each difficulty level
     if difficulty == "trivial.gif":
         start = (8, 1)
         end = (20, 1)
@@ -106,12 +138,18 @@ if __name__ == "__main__":
         end = (599, 350)
     else:
         assert False, "Incorrect difficulty level provided"
+
+    open = queue.PriorityQueue()
+    came_from = {}
+    cost_so_far = {}
+
     G = 1000000000000000000
     E = 1000000000000000000
     open.put((start, 0))
     came_from[start] = None
     cost_so_far[start] = 0
-    # Perform search on given image
+
     im = Image.open(difficulty)
     im = im.convert('1')
     search(im.load())
+    visualize_search("searching_map.png")
